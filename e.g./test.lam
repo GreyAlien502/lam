@@ -1,0 +1,68 @@
+#!/home/greyalien502/lams/lam
+x:
+x x
+f:e:
+e f
+=:
+
+=
+	import
+		, 'builtins
+	py:
+=
+	text:
+		py 'print
+			, text
+	print:
+=
+	number:
+		x:
+			x x
+			self: currentList:
+				?
+					==
+						currentList '__len__
+							[
+						number
+					py 'tuple
+						, currentList
+					next:
+						self self
+							currentList
+								, next
+			[
+	(:
+=
+	import
+		, 'sys
+		'argv
+	$:
+=
+	str:
+		str
+			'replace
+			,
+				'\_
+				, space
+			'encode
+			[
+			'decode
+			, 'unicode_escape
+	":
+=
+	=
+		import
+			, 'subprocess
+		subprocess:
+	args:
+		subprocess 'run
+			,
+				args
+				,
+					subprocess 'PIPE
+			'stdout
+	#:
+print
+	#
+		[
+			, 'ls

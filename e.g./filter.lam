@@ -1,0 +1,203 @@
+#!/home/greyalien502/lams/lam
+x:
+x x
+f:e:
+e f
+=:
+
+=
+	import
+		, 'sys
+		'argv
+	$:
+=
+	module: f: arg:
+		module f
+			, arg
+	():
+=
+	import
+		, 'builtins
+	py:
+=
+	number:
+		x:
+			x x
+			self: currentList:
+				?
+					==
+						currentList '__len__
+							[
+						number
+					py 'tuple
+						, currentList
+					next:
+						self self
+							currentList
+								, next
+			[
+	(:
+=
+	space-replacement: str:
+		str 'replace
+			( 2
+				space-replacement
+				space
+	\:
+=
+	elements:func:
+		() py 'list
+			py 'map
+				[
+					, func
+					, elements
+	map:
+=
+	() py 'print
+	print:
+
+
+=
+	import
+		, 'numpy
+	np:
+=
+	x:
+		()
+			import
+				, 'numpy.linalg
+			x
+	lin-alg:
+=
+	lin-alg 'pinv
+	invert:
+=
+	lin-alg 'cond
+	condition#:
+=
+	() np 'matrix
+	matrix:
+
+
+
+
+=
+	=
+		list: new-value:
+			np 'append
+				[
+					, list
+					,
+						np 'full
+							[
+								,
+									+
+										() py 'list
+											list 'shape
+												py 'slice
+													[
+														, 0
+														, -1
+										, 1
+								, new-value
+					, -1
+		extend:
+	image: pairs:
+		=
+			*
+				invert
+					extend
+						matrix
+							map
+								pairs
+								pair:
+									pair 0
+						1
+				matrix
+					map
+						pairs
+						pair:
+							pair 1
+			transform:
+		=
+			print
+				space 'join
+					,
+						[
+							, 'The
+							, 'condition
+							, 'number
+							, 'is
+							,
+								+
+									lin-alg 'cond transform '__str__
+										[
+									'.
+			:
+		np 'tensordot
+			[
+				, 
+					extend image 255
+				, transform
+				, 1
+	filter:
+=
+	[
+		,
+			( 2
+				( 3
+					0
+					0
+					0
+				( 3
+					0
+					.5
+					.5
+		,
+			( 2
+				( 3
+					1
+					1
+					1
+				( 3
+					2
+					2
+					2
+		,
+			( 2
+				( 3
+					0
+					0
+					1
+				( 3
+					0
+					1
+					0
+		,
+			( 2
+				( 3
+					0
+					1
+					0
+				( 3
+					0
+					0
+					1
+
+	pairs:
+=
+	import
+		, 'cv2
+	cv2:
+=
+	() cv2 'imread
+		$ 2
+			
+	image:
+cv2 'imwrite
+	[
+		, '/tmp/imagtest.jpg
+		,
+			filter
+				image
+				pairs
