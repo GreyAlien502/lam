@@ -1,0 +1,16 @@
+#!/bin/env python
+from parse import parse
+from exe import execute
+
+
+if __name__ == '__main__':
+	import sys;
+	try:
+		assert( sys.argv[2] == '-v' );
+		log = True;
+	except:
+		log = False;
+
+	with open(sys.argv[1]) as file:
+		code = file.read();
+	execute(parse(code),sys.argv[1]);
