@@ -1,31 +1,9 @@
 import re;
 import ast;
 
-def parse(code,log=False):
-	if log:
-		log = print
-	else:
-		def log(*a):...;
-
-	def reduce(rules,tree):
-		for i in range(len(tree)):
-			for rule in rules:
-				try:
-					#verify everything
-					matches = tree[i:i+len(rule[0])];
-					for class_,match in zip(rule[0],matches):
-						assert class_ == type(match), "Rule doesn't apply";
-
-					nuvonode = rule[1](*matches);
-					for match in matches:
-						tree.remove(match);
-					tree.insert(i,nuvonode);
-					return True;
-				except Exception as e:
-					log(rule[0], i, e)
-					continue;
-		return False;
-
+def nullog(*a):...;
+def parse_code(code,log=False):
+	log = print if log else nullog;
 	def Lambda(argument):
 		return ast.Lambda(
 			args=ast.arguments(
@@ -79,7 +57,19 @@ def parse(code,log=False):
 	class Outdent():
 		pass;
 
-	rules = [
+	class Rule:
+		def __init__(self,classes,combinor):
+			self.classes = classes;
+			self.combinor = combinor;
+		def __len__(self):
+			return len(self.classes);
+		def __call__(self,*matches):
+			#verify everything
+			for class_,match in zip(self.classes,matches):
+				assert class_ == type(match), "Rule doesn't apply";
+			return self.combinor(*matches);
+
+	rules = [Rule(*rule) for rule in [
 		(
 			[ ast.Expression, ast.Expression ],
 			lambda e1,e2: ast.Expression(Call(e1.body,e2.body)),
@@ -99,8 +89,8 @@ def parse(code,log=False):
 			[ Indent, Unbound, Outdent ],
 			lambda opn,u,clos: u,
 		),
-	];
-	#Actual code starts here:
+	] ];
+
 
 	lines = code.split('\n');
 	indents = [-1];
@@ -120,11 +110,9 @@ def parse(code,log=False):
 		log(line);
 		log(''.join( str(type(token)) for token in output));
 	output += [Outdent() for i in range(1 +indents[-1])];
-	while reduce(rules,output):
-		log('reducit');
-		for put in output:
-			log('\t',put);
-		pass;
+	
+	output = parse(output,rules,log);
+
 	assert len(output) == 1;
 	output = output[0];
 	output.lineno = 0;
@@ -160,3 +148,64 @@ def getUndefinedVariables(node,definedVariables=[]):
 			for child in ast.iter_child_nodes(node)
 		]
 	);
+
+
+def parse(tokens,rules,log=lambda*x:x):
+	def reduce(rules,nodes):
+		for i in range(len(nodes)):
+			for rule in rules:
+				try:
+					#verify everything
+					matches = nodes[i:i+len(rule)];
+					nuvonode = rule(*matches);
+					for match in matches:
+						nodes.remove(match);
+					nodes.insert(i,nuvonode);
+					return True;
+				except Exception as e:
+					log(rule, i, e)
+					continue;
+		return False;
+	while reduce(rules,tokens):
+		log('reducit');
+		for put in tokens:
+			log('\t',put);
+	return tokens;
+
+
+def parse_args(args,switches=[],options=[],log=False):
+	log = print if log else nullog;
+	class Option:
+		def __init__(self,options):
+			self.options = options;
+		def __len__(self):
+			return 3;
+		def __call__(self,options,switch,value):
+			assert isinstance(options,dict);
+			if switch in self.options:
+				return {
+					**options,
+					self.options[0]: value,
+				};
+			raise Exception('does not apply');
+	class Switch(Option):
+		def __init__(self,options):
+			self.options = options;
+		def __len__(self):
+			return 2;
+		def __call__(self,options,switch):
+			return Option.__call__(self,options,switch,True);
+	options,*args = parse(
+		[{ switch[0]: False for switch in switches }] +args,
+		[ Switch(switch) for switch in switches]
+		+
+		[ Option(option) for option in options ],
+		log
+	);
+	log(options);
+	if len(args) > 0:
+		if args[0] == '--':
+			args = args[1:];
+		elif args[0][:1] == '-':
+			raise Exception(f'invalid argument or missing parameter: {args[0]}');
+	return (options, args);

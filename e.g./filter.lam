@@ -1,4 +1,4 @@
-#!/home/greyalien502/lams/lam
+#!/home/greyalien502/bin/lam
 x:
 x x
 f:e:
@@ -191,7 +191,7 @@ e f
 	cv2:
 =
 	() cv2 'imread
-		$ 2
+		$ 1
 			
 	image:
 cv2 'imwrite

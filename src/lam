@@ -1,16 +1,46 @@
 #!/bin/env python
-from parse import parse
-from exe import execute
+import sys;
+import argparse;
+
+from parse import parse_code, parse_args;
+from impl.py import execute;
+from impl.js import print_js;
 
 
-if __name__ == '__main__':
-	import sys;
-	try:
-		assert( sys.argv[2] == '-v' );
-		log = True;
-	except:
-		log = False;
 
-	with open(sys.argv[1]) as file:
-		code = file.read();
-	execute(parse(code),sys.argv[1]);
+switches = [
+	[ '--verbose', '-v' ],
+	[ '--help', '-h', '-?' ],
+	[ '--javascript', '--js' ],
+];
+def printHelp():
+	print( 'Usage: lam '+' '.join(f'[{", ".join(switch) }]' for switch in switches ) );
+try:
+	options, args = parse_args(
+		sys.argv[1:],
+		switches,
+		[],
+	);
+except:
+	printHelp();
+	exit(1);
+
+
+if options['--help']:
+	printHelp();
+	exit(0);
+
+
+if len(args)==0:
+	raise Exception('missing argument filename');
+filename = args[0];
+with open(filename) as file:
+	program = parse_code(file.read(),options['--verbose']);
+
+if options['--javascript']:
+	print(print_js(program));
+	exit(0);
+	
+
+sys.argv = args;
+execute(program,filename);
